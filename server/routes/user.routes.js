@@ -6,6 +6,7 @@ const router = Router()
 router.post('/', auth, async (req,res) => {
   try {
     const {userId} = req.body
+    console.log(userId)
     const user = await User.findById({_id: userId})
     res.json(user)
   } catch (e) {

@@ -19,9 +19,9 @@ export const LoginPage = () => {
     clearError()
   }, [error, message, clearError])
 
-  useEffect(() => {
-    window.M.updateTextFields()
-  }, [])
+  // useEffect(() => {
+  //   window.M.updateTextFields()
+  // }, [])
 
   const changeHandler = event => {
     validationHandler(event.target.name, event.target.value)
