@@ -4,8 +4,10 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const {check, validationResult } = require('express-validator')
 const User = require('../models/User')
-const {log} = require("nodemon/lib/utils");
 const router = Router()
+const validation = require('../middleware/validate.middleware')
+
+const { celebrate, Joi, errors, Segments } = require('celebrate');
 
 router.post(
     '/register',
@@ -36,12 +38,20 @@ router.post(
         res.status(500).json({message: "Something went wrong"})
     }
 })
+  // [
+  // check('email', 'Enter correct email').normalizeEmail().isEmail(),
+  //   check('password', 'Enter password').exists()
+  // ]
 router.post(
-    '/login',
-    [
-        check('email', 'Enter correct email').normalizeEmail().isEmail(),
-        check('password', 'Enter password').exists()
-    ],
+  '/login',
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().email().required(),
+      password: Joi.string()
+        .pattern(new RegExp('^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$')),
+      fullName: Joi.string().min(5)
+    }),
+  }),
     async (req, res) => {
     try {
         const errors = validationResult(req)
