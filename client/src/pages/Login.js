@@ -19,9 +19,9 @@ export const LoginPage = () => {
     clearError()
   }, [error, message, clearError])
 
-  // useEffect(() => {
-  //   window.M.updateTextFields()
-  // }, [])
+  useEffect(() => {
+    window.M.updateTextFields()
+  }, [])
 
   const changeHandler = event => {
     validationHandler(event.target.name, event.target.value)
@@ -45,7 +45,7 @@ export const LoginPage = () => {
       })
       setErrorField(resultValidate)
       if (isValidAllData) {
-        const data = await request('api/auth/login', 'POST', {...formData})
+        const data = await request('http://localhost:5000/api/auth/login', 'POST', {...formData})
         message(data.message)
         clearErrorField()
         auth.login(data.token, data.userId)

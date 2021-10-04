@@ -13,7 +13,7 @@ export const PersonalPage = () => {
   const fetchUser = useCallback(async () => {
     try {
       if (auth.userId) {
-        const fetched = await request('/api/user', 'POST', {userId: auth.userId}, {
+        const fetched = await request('http://localhost:5000/api/user', 'POST', {userId: auth.userId}, {
           Authorization: `Bearer ${auth.token}`
         })
         setUser(fetched)

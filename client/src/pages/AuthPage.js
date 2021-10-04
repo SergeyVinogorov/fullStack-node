@@ -54,7 +54,7 @@ export const AuthPage = () => {
           return;
         }
         formData['fullName'] = `${form.name} ${form.surname}`
-        const data = await request('/api/auth/register', 'POST', {...formData})
+        const data = await request('http://localhost:5000/api/auth/register', 'POST', {...formData})
         message(data.message)
         clearErrorField()
         history.push('/login')
