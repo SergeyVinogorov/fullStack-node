@@ -1,16 +1,15 @@
 const {Router} = require('express')
-const User = require('../models/User')
 const auth = require('../middleware/auth.middleware')
+const userController = require('../controllers/userController')
 const router = Router()
 
-router.post('/', auth, async (req,res) => {
+router.post('/', auth, async (req,res, next) => {
   try {
     const {userId} = req.body
-    console.log(userId)
-    const user = await User.findById({_id: userId})
+    const user = await userController(userId)
     res.json(user)
   } catch (e) {
-    res.status(500).json({message: "Something went wrong"})
+    next(e)
   }
 })
 

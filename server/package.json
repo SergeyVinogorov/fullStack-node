@@ -10,7 +10,7 @@
     "client:install": "npm install --prefix ../client",
     "client:build": "npm run build --prefix ../client",
     "dev": "cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\"",
-    "test": "jest"
+    "test": "cross-env NODE_ENV=development jest"
   },
   "keywords": [
     "mern",
@@ -22,15 +22,17 @@
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.0",
     "config": "^3.3.6",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-validator": "^6.12.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.7"
+    "mongoose": "^6.0.7",
+    "superagent": "^6.1.0"
   },
   "devDependencies": {
     "concurrently": "^6.2.1",
     "cross-env": "^7.0.3",
-    "jest": "^27.2.2",
+    "jest": "^27.2.4",
     "nodemon": "^2.0.12",
     "supertest": "^6.1.6"
   }

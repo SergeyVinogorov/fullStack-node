@@ -1,75 +1,47 @@
-// import { render, screen } from '@testing-library/react';
-// import App from './App';
-//
-// tests('renders initial react app', () => {
-//   render(<App />);
-//   const linkElement = screen.getByText(/learn react/i);
-//   expect(linkElement).toBeInTheDocument();
-// });
+import puppeteer from "puppeteer";
 
-import React from 'react'
-import {render, screen} from '@testing-library/react'
-import '@testing-library/jest-dom'
-// import {NameContext, NameProvider, NameConsumer} from '../react-context'
-import {AuthContext} from "./context/AuthContext";
-import {MemoryRouter} from 'react-router-dom';
-import {useRoutes} from "./routes";
-import {PersonalPage} from "./pages/PersonalPage";
-// import {useAuth} from "./hooks/auth.hook";
+describe("App.js", () => {
+  let browser;
+  let page;
 
-function setupRoutes(...args) {
-  const returnVal = {}
-  function TestComponent() {
-    Object.assign(returnVal, useRoutes(...args))
-    return null
-  }
-  render(<TestComponent />)
-  return returnVal
-}
-test('show main route', ()=> {
-  const routes = setupRoutes(true)
+  beforeAll(async () => {
+    browser = await puppeteer.launch();
+    page = await browser.newPage();
+  });
 
-  const app = render(
-    <MemoryRouter initialEntries={['/main']} initialIndex={0}>
-      {routes}
-    </MemoryRouter>
-  );
-  expect(app.getByText(/Welcome/i)).toBeInTheDocument();
-})
-test('show login route', ()=> {
-  const routes = setupRoutes(false)
+  it("should be authorization in first load", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector(".card-title");
+    const text = await page.$eval(".card-title", (e) => e.textContent);
+    expect(text).toContain("Authorization");
+  })
 
-  const app = render(
-    <MemoryRouter initialEntries={['/login']} initialIndex={0}>
-      {routes}
-    </MemoryRouter>
-  );
-  expect(app.getByText(/Authentication/i)).toBeInTheDocument();
-})
+  it("shows login page after submitting a form", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector(".card-content");
 
-/**
- * A custom render to setup providers. Extends regular
- * render options with `providerProps` to allow injecting
- * different scenarios to tests with.
- *
- * @see https://testing-library.com/docs/react-testing-library/setup#custom-render
- */
-const customRender = (ui, {providerProps, ...renderOptions}) => {
-  return render(
-    <AuthContext.Provider {...providerProps}>{ui}</AuthContext.Provider>,
-    renderOptions,
-  )
-}
+    await page.click("#email");
+    await page.type("#email", "usertest@gmail.com");
 
-test('NameConsumer shows value from provider', () => {
-  const providerProps = {
-    token: 'token',
-    userId: 'userId',
-    login: () => {},
-    logout: () => {},
-    isAuthenticated: true,
-    value: 'token',
-  }
-  customRender(<PersonalPage />, {providerProps})
-  expect(screen.getByText(/To logout click here/))
-})
+    await page.click("#password");
+    await page.type("#password", "qwerty12#");
+
+    await page.click("#name");
+    await page.type("#name", "JohnTest");
+
+    await page.click("#surname");
+    await page.type("#surname", "DoeTest");
+
+    await page.click(".yellow");
+
+    await page.waitForSelector('.helper-text')
+
+    const text = await page.$eval(
+      ".helper-text",
+      (e) => e.textContent
+    )
+    expect(text).toContain("Sample of email: some@mail.com");
+  })
+
+  afterAll(() => browser.close());
+});

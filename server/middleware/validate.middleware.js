@@ -9,9 +9,4 @@ validation.auth = celebrate({
     fullName: Joi.string().min(5)
   }),
 })
-validation.user = celebrate({
-  [Segments.HEADERS]: Joi.object({
-    token: Joi.string().required().regex(/abc\d{3}/)
-  }).unknown()
-})
 module.exports = validation

@@ -45,7 +45,7 @@ export const LoginPage = () => {
       })
       setErrorField(resultValidate)
       if (isValidAllData) {
-        const data = await request('/api/auth/login', 'POST', {...formData})
+        const data = await request('api/auth/login', 'POST', {...formData})
         message(data.message)
         clearErrorField()
         auth.login(data.token, data.userId)
