@@ -11,4 +11,5 @@ COPY . .
 
 EXPOSE 5000
 
-CMD [ "index.js" ]
+#CMD [ "index.js" ]
+CMD node -r dotenv/config index.js

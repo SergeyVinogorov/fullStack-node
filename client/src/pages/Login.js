@@ -1,66 +1,70 @@
-import React, {useState, useEffect, useContext} from "react"
-import {useHttp} from "../hooks/http.hook";
-import {useMessage} from "../hooks/message.hook";
-import {useValidateField} from "../hooks/validate.hook";
-import {AuthContext} from "../context/AuthContext";
-import {Link} from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useHttp } from "../hooks/http.hook";
+import { useMessage } from "../hooks/message.hook";
+import { useValidateField } from "../hooks/validate.hook";
+import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export const LoginPage = () => {
-  const auth = useContext(AuthContext)
-  const message = useMessage()
-  const {loading, error, request, clearError} = useHttp()
-  const {errorField, setErrorField, validationHandler, clearErrorField} = useValidateField()
+  const auth = useContext(AuthContext);
+  const message = useMessage();
+  const { loading, error, request, clearError } = useHttp();
+  const { errorField, setErrorField, validationHandler, clearErrorField } = useValidateField();
   const [form, setForm] = useState({
-    email: '', password: ''
-  })
-
-  useEffect(()=>{
-    message(error)
-    clearError()
-  }, [error, message, clearError])
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
-    window.M.updateTextFields()
-  }, [])
+    message(error);
+    clearError();
+  }, [error, message, clearError]);
 
-  const changeHandler = event => {
-    validationHandler(event.target.name, event.target.value)
-    setForm({ ...form, [event.target.name]: event.target.value })
-  }
+  useEffect(() => {
+    window.M.updateTextFields();
+  }, []);
+
+  const changeHandler = (event) => {
+    validationHandler(event.target.name, event.target.value);
+    setForm({ ...form, [event.target.name]: event.target.value });
+  };
 
   const loginHandler = async () => {
     try {
-      const validatedFormData = Object.keys(form).map(formName => {
-        const validationData = validationHandler(formName, form[formName])
-        return {dataName: formName, dataValidation:{...validationData}}
-      })
-      const formData = { email: form.email, password: form.password }
-      let resultValidate = {}
-      let isValidAllData = true
-      validatedFormData.forEach(element => {
-        if(element.dataValidation.isNotValid) {
-          isValidAllData = false
+      const validatedFormData = Object.keys(form).map((formName) => {
+        const validationData = validationHandler(formName, form[formName]);
+        return { dataName: formName, dataValidation: { ...validationData } };
+      });
+      const formData = { email: form.email, password: form.password };
+      let resultValidate = {};
+      let isValidAllData = true;
+      validatedFormData.forEach((element) => {
+        if (element.dataValidation.isNotValid) {
+          isValidAllData = false;
         }
-        resultValidate = {...resultValidate, [element.dataName]: element.dataValidation}
-      })
-      setErrorField(resultValidate)
+        resultValidate = { ...resultValidate, [element.dataName]: element.dataValidation };
+      });
+      setErrorField(resultValidate);
       if (isValidAllData) {
-        const data = await request('http://localhost:5000/api/auth/login', 'POST', {...formData})
-        message(data.message)
-        clearErrorField()
-        auth.login(data.token, data.userId)
+        const data = await request("/api/auth/login", "POST", { ...formData });
+        message(data.message);
+        clearErrorField();
+        auth.login(data.token, data.userId);
       }
-    } catch (e) {}
-  }
+    } catch (e) {
+      console.log(e);
+      message("Something went wrong");
+    }
+  };
   const classNameHelper = (name) => {
     if (errorField[name].isNotValid) {
-      return 'invalid'
+      return "invalid";
     }
-    if(form[name] && !errorField[name].isNotValid && !errorField[name].message) {
-      return 'valid'
+    if (form[name] && !errorField[name].isNotValid && !errorField[name].message) {
+      return "valid";
     }
-    return ''
-  }
+    return "";
+  };
 
   return (
     <div className="row">
@@ -70,46 +74,54 @@ export const LoginPage = () => {
           <div className="card-content black-text">
             <span className="card-title">Authentication</span>
             <div>
-
               <div className="input-field">
                 <input
                   id="email"
                   type="text"
                   name="email"
-                  className={classNameHelper('email')}
+                  className={classNameHelper("email")}
                   value={form.email}
                   onChange={changeHandler}
                 />
                 <label htmlFor="email">Email</label>
-                <span className="helper-text" data-error={`${errorField.email.message}`} data-success="The field is correct">Sample of email: some@mail.com</span>
+                <span
+                  className="helper-text"
+                  data-error={`${errorField.email.message}`}
+                  data-success="The field is correct"
+                >
+                  Sample of email: some@mail.com
+                </span>
               </div>
               <div className="input-field">
                 <input
                   id="password"
                   type="password"
                   name="password"
-                  className={classNameHelper('password')}
+                  className={classNameHelper("password")}
                   value={form.password}
                   onChange={changeHandler}
                 />
                 <label htmlFor="password">Password</label>
-                <span className="helper-text" data-error={`${errorField.password.message}`} data-success="The field is correct">The field should be at least 8 character minimum 1 letter and minimum 1 number</span>
+                <span
+                  className="helper-text"
+                  data-error={`${errorField.password.message}`}
+                  data-success="The field is correct"
+                >
+                  The field should be at least 8 character minimum 1 letter and minimum 1 number
+                </span>
               </div>
             </div>
           </div>
           <div className="card-action">
-            <button
-              className="btn green darken-1"
-              disabled={loading}
-              type={'submit'}
-              onClick={loginHandler}
-            >
+            <button className="btn green darken-1" disabled={loading} type={"submit"} onClick={loginHandler}>
               Login
             </button>
           </div>
         </div>
-        <Link to={'/'} className={'btn yellow darken-1'}>Create an account</Link>
+        <Link to={"/"} className={"btn yellow darken-1"}>
+          Create an account
+        </Link>
       </div>
     </div>
-  )
-}
+  );
+};
